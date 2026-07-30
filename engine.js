@@ -34,7 +34,7 @@ function createSession({ theme, cfg, content, io }) {
     t0: now(),
     endAt: cfg.duration ? now() + cfg.duration * 1000 : 0,
     cwd: '~', branch: 'main',
-    lastEsc: 0,
+    lastEsc: 0, scenarios: 0,
   };
 
   /* ------------------------------------------------------------- painting */
@@ -206,7 +206,7 @@ function createSession({ theme, cfg, content, io }) {
   async function runScenario(sc) {
     S.cwd = sc.cwd;
     S.branch = sc.branch;
-    io.chrome(sc, theme);
+    io.chrome(sc, theme, S.scenarios++ === 0);   // banner only on the first one
     paintInput();
     paintStatus();
     await typePrompt(sc.prompt);

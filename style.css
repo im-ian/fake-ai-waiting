@@ -182,7 +182,7 @@ select {
 .tab .live { color: var(--add-fg); }
 .tab .x { color: var(--dim); }
 
-.banner { padding: 10px 14px 0; color: var(--dim); }
+.banner { flex: none; padding-bottom: 6px; color: var(--dim); }
 .banner .big { color: var(--accent); font-weight: 700; }
 
 .promptbox { padding: 6px 14px 4px; }

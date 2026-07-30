@@ -9,13 +9,19 @@ let session = null;
 /* ------------------------------------------------------------ DOM renderer */
 
 const domIO = {
-  chrome(sc, theme) {
-    const banner = typeof theme.banner === 'function' ? theme.banner(sc) : theme.banner;
+  chrome(sc, theme, first) {
+    // tab bar is real chrome and stays put; the welcome banner is transcript,
+    // printed once at launch and scrolled away after that
     top_.innerHTML = theme.tab
       ? `<div class="tabbar"><div class="tab"><span class="live">●</span>${esc(sc.branch)}<span class="x">✕</span></div></div>`
-      : banner
-        ? `<div class="banner">${banner.map((l, i) => `<div${i === 0 ? ' class="big"' : ''}>${esc(l)}</div>`).join('')}</div>`
-        : '';
+      : '';
+    const banner = first && (typeof theme.banner === 'function' ? theme.banner(sc) : theme.banner);
+    if (banner) {
+      const el = document.createElement('div');
+      el.className = 'banner';
+      el.innerHTML = banner.map((l, i) => `<div${i === 0 ? ' class="big"' : ''}>${esc(l)}</div>`).join('');
+      out.appendChild(el);
+    }
     if (!bottom.firstChild) {
       bottom.innerHTML = `
         <div class="promptbox">

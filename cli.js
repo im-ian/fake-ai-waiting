@@ -82,10 +82,10 @@ function makeIO(theme, { plain }) {
   }
 
   return {
-    chrome(sc) {
-      const banner = typeof theme.banner === 'function' ? theme.banner(sc) : theme.banner;
+    chrome(sc, _theme, first) {
       if (theme.tab) w(`\n${FG(pal.addFg)}●${RESET} ${FG(pal.fgb)}${sc.branch}${RESET} ${FG(pal.dim)}✕${RESET}\n`);
-      else if (banner) w('\n' + banner.map((l, i) => (i === 0 ? FG(pal.accent) : FG(pal.dim)) + l + RESET).join('\n') + '\n');
+      const banner = first && (typeof theme.banner === 'function' ? theme.banner(sc) : theme.banner);
+      if (banner) w('\n' + banner.map((l, i) => (i === 0 ? FG(pal.accent) : FG(pal.dim)) + l + RESET).join('\n') + '\n');
       drawFooter();
     },
 
