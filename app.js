@@ -44,7 +44,7 @@ const domIO = {
     const el = document.createElement('div');
     el.className = 'line ' + rowCls;
     out.appendChild(el);
-    while (out.children.length > 600) out.firstChild.remove();
+    while (out.children.length > cfg.scrollback) out.firstChild.remove();
     out.scrollTop = out.scrollHeight;
     return {
       write(segs) {
@@ -132,7 +132,7 @@ stage.addEventListener('dblclick', () => session?.key({ type: 'kill' }));
 
 const LS = 'fake-ai-cfg';
 const cfg = Object.assign(
-  { theme: 'claude', duration: 600, speed: 24, scenario: '*', fullscreen: true, effort: true },
+  { theme: 'claude', duration: 600, speed: 24, scenario: '*', fullscreen: true, effort: true, scrollback: 600 },
   JSON.parse(localStorage.getItem(LS) || '{}')
 );
 
@@ -162,6 +162,7 @@ function bindPicker(sel, key, cast = String) {
 bindPicker('#pick-theme', 'theme');
 bindPicker('#pick-dur', 'duration', Number);
 bindPicker('#pick-speed', 'speed', Number);
+bindPicker('#pick-scrollback', 'scrollback', Number);
 
 $('#pick-scenario').value = cfg.scenario;
 $('#pick-scenario').onchange = e => { cfg.scenario = e.target.value; renderCmd(); };

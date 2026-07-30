@@ -66,12 +66,23 @@
   </section>
 
   <section class="field">
+    <label>출력 보관 줄 수 (스크롤백)</label>
+    <div class="chips" id="pick-scrollback">
+      <button data-val="200">200줄</button>
+      <button data-val="600" class="on">600줄</button>
+      <button data-val="2000">2,000줄</button>
+      <button data-val="10000">10,000줄</button>
+    </div>
+    <p class="hintline">지나간 줄을 몇 개까지 들고 있을지 정합니다. 넘치면 위쪽부터 버려서 오래 재생해도 메모리가 늘지 않습니다. 웹에만 있는 설정입니다.</p>
+  </section>
+
+  <section class="field">
     <label>같은 설정으로 터미널에서 실행</label>
     <div class="cmd">
       <code id="cmd"></code>
       <button id="copy" type="button">복사</button>
     </div>
-    <p class="hintline">Node 18 이상이면 클론 없이 그대로 실행됩니다. 전체화면 옵션은 터미널에 해당하는 설정이 없어 빠집니다.</p>
+    <p class="hintline">Node 18 이상이면 클론 없이 그대로 실행됩니다. 전체화면과 스크롤백은 터미널에 해당하는 설정이 없어 빠집니다.</p>
   </section>
 
   <button id="start">재생 시작</button>
