@@ -143,7 +143,7 @@ $('#pick-theme').innerHTML = Object.entries(THEMES).map(([k, t]) => `
   </button>`).join('');
 
 $('#pick-scenario').innerHTML =
-  `<option value="*">자동 (전체 랜덤 · ${SCENARIOS.length}개)</option>` +
+  `<option value="*">전체 시나리오 무작위 재생 (${SCENARIOS.length}개)</option>` +
   SCENARIOS.map(s => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
 
 function bindPicker(sel, key, cast = String) {
@@ -155,6 +155,7 @@ function bindPicker(sel, key, cast = String) {
     if (!b) return;
     cfg[key] = cast(b.dataset.val);
     paint();
+    renderCmd();
   });
   paint();
 }
@@ -163,13 +164,38 @@ bindPicker('#pick-dur', 'duration', Number);
 bindPicker('#pick-speed', 'speed', Number);
 
 $('#pick-scenario').value = cfg.scenario;
-$('#pick-scenario').onchange = e => { cfg.scenario = e.target.value; };
+$('#pick-scenario').onchange = e => { cfg.scenario = e.target.value; renderCmd(); };
 $('#opt-fs').checked = cfg.fullscreen;
 $('#opt-effort').checked = cfg.effort;
+$('#opt-fs').onchange = e => { cfg.fullscreen = e.target.checked; };
+$('#opt-effort').onchange = e => { cfg.effort = e.target.checked; renderCmd(); };
+
+// the equivalent CLI invocation for whatever is selected right now
+const SPEED_NAMES = { 42: 'slow', 24: 'normal', 13: 'fast', 6: 'turbo' };
+function cliCommand() {
+  const a = ['npm', 'exec', '--yes', '--', 'github:im-ian/fake-ai-waiting'];
+  a.push('-t', cfg.theme);
+  a.push('-T', String(cfg.duration / 60));
+  a.push('-s', SPEED_NAMES[cfg.speed] || String(cfg.speed));
+  if (cfg.scenario !== '*') a.push('--scenario', cfg.scenario);
+  if (!cfg.effort) a.push('--no-effort');
+  return a.join(' ');
+}
+function renderCmd() { $('#cmd').textContent = cliCommand(); }
+renderCmd();
+
+$('#copy').onclick = async () => {
+  const btn = $('#copy');
+  try {
+    await navigator.clipboard.writeText(cliCommand());
+    btn.textContent = '복사됨';
+  } catch {
+    btn.textContent = '복사 실패';
+  }
+  setTimeout(() => { btn.textContent = '복사'; }, 1600);
+};
 
 $('#start').onclick = () => {
-  cfg.fullscreen = $('#opt-fs').checked;
-  cfg.effort = $('#opt-effort').checked;
   localStorage.setItem(LS, JSON.stringify(cfg));
   begin(cfg);
 };

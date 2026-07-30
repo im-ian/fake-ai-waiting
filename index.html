@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fake AI Working Screen — 일하는 척 하기</title>
-<meta name="description" content="Codex / Claude Code / Gemini CLI / Grok CLI 화면을 흉내내는 장난용 가짜 AI 작업 화면.">
+<title>Fake AI Working Screen</title>
+<meta name="description" content="Codex, Claude Code, Gemini CLI, Grok CLI 의 작업 화면을 그대로 재현한 터미널 플레이어.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,9 +18,9 @@
         GitHub
       </a>
     </div>
-    <p class="sub">테마와 시간을 고르고 시작하면 AI CLI 가 열심히 일하는 화면이 재생됨.<br>
-      아무 말이나 타이핑하고 <kbd>Enter</kbd> = 메시지 큐에 적립 → 작업 끝나면 받아서 이어감.
-      <kbd>Esc</kbd> = 인터럽트, <kbd>Esc</kbd> <kbd>Esc</kbd> = 종료.</p>
+    <p class="sub">테마와 재생 시간을 고르면 AI 에이전트가 작업하는 터미널 화면이 그대로 재생됩니다.<br>
+      재생 중에 아무 문장이나 입력하고 <kbd>Enter</kbd> 를 누르면 메시지가 큐에 쌓여 다음 턴에 반영되고,
+      <kbd>Esc</kbd> 로 중단, <kbd>Esc</kbd> 를 두 번 누르면 나갑니다.</p>
   </header>
 
   <section class="field">
@@ -57,23 +57,32 @@
       <select id="pick-scenario"></select>
     </div>
     <div class="field">
-      <label>연출</label>
+      <label>옵션</label>
       <div class="checks">
         <label class="check"><input type="checkbox" id="opt-fs" checked> 전체화면으로 시작</label>
-        <label class="check"><input type="checkbox" id="opt-effort" checked> effort 로딩 연출 (긴 대기)</label>
+        <label class="check"><input type="checkbox" id="opt-effort" checked> 추론하는 동안 오래 기다리는 연출 넣기</label>
       </div>
     </div>
   </section>
 
-  <button id="start">시작</button>
-  <p class="foot">전부 가짜다. 네트워크 요청 없음, 서버 없음, 저장되는 건 브라우저에 남는 설정뿐.</p>
+  <section class="field">
+    <label>같은 설정으로 터미널에서 실행</label>
+    <div class="cmd">
+      <code id="cmd"></code>
+      <button id="copy" type="button">복사</button>
+    </div>
+    <p class="hintline">Node 18 이상이면 클론 없이 그대로 실행됩니다. 전체화면 옵션은 터미널에 해당하는 설정이 없어 빠집니다.</p>
+  </section>
+
+  <button id="start">재생 시작</button>
+  <p class="foot">화면에 나오는 출력은 모두 미리 작성해 둔 스크립트입니다. 서버도 네트워크 요청도 없고, 고른 설정만 브라우저에 저장됩니다.</p>
 </main>
 
 <div id="stage" hidden>
   <div id="top"></div>
   <div id="out"></div>
   <div id="bottom"></div>
-  <div id="hint">타이핑 + <kbd>Enter</kbd> 큐 · <kbd>Esc</kbd> 인터럽트 · <kbd>Esc</kbd><kbd>Esc</kbd> 종료</div>
+  <div id="hint"><kbd>Enter</kbd> 메시지 큐에 추가 · <kbd>Esc</kbd> 중단 · <kbd>Esc</kbd> 두 번 종료</div>
 </div>
 
 <script src="themes.js"></script>

@@ -117,6 +117,40 @@ select {
 .check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #bcbcc4; cursor: pointer; }
 .check input { accent-color: #6e6ef0; }
 
+.cmd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #101014;
+  border: 1px solid #26262e;
+  border-radius: 8px;
+  padding: 10px 10px 10px 13px;
+}
+.cmd code {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: #cfcfd6;
+  scrollbar-width: thin;
+}
+#copy {
+  flex: none;
+  appearance: none;
+  background: #23232b;
+  border: 1px solid #33333d;
+  color: #c9c9d0;
+  border-radius: 6px;
+  padding: 5px 11px;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+#copy:hover { background: #2d2d36; color: #fff; }
+.hintline { margin: 8px 0 0; font-size: 12px; color: #6b6b75; line-height: 1.6; }
+
 #start {
   appearance: none;
   width: 100%;
