@@ -29,11 +29,32 @@ kbd {
   margin: 0 auto;
   padding: 56px 24px 80px;
 }
+.titlerow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 #config h1 {
   font-size: 28px;
   margin: 0 0 10px;
   letter-spacing: -.02em;
 }
+.gh {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  padding: 7px 12px;
+  border: 1px solid #26262e;
+  border-radius: 999px;
+  background: #15151a;
+  color: #c9c9d0;
+  font-size: 13px;
+  text-decoration: none;
+}
+.gh:hover { border-color: #4a4a56; color: #fff; }
 #config .sub { margin: 0 0 36px; color: #9b9ba4; line-height: 1.7; font-size: 14px; }
 
 .field { margin-bottom: 26px; min-width: 0; }
