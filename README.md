@@ -6,6 +6,10 @@
 
 ## 웹
 
+**https://im-ian.github.io/fake-ai-waiting/**
+
+로컬에서 열려면:
+
 ```bash
 python3 -m http.server 8899   # 아무 정적 서버나
 open http://localhost:8899
@@ -17,12 +21,49 @@ GitHub Pages 배포: Settings → Pages → Source `Deploy from a branch` → �
 
 ## CLI
 
+### 무설치 실행 (npx)
+
+Node 18+ 만 있으면 됨. 클론도 install 도 필요 없음.
+
 ```bash
-node cli.js                                        # 대화형 메뉴
-node cli.js --theme codex --time 10 --speed fast
-node cli.js --list                                 # 시나리오 목록
-node cli.js --help
+npx -y github:im-ian/fake-ai-waiting                              # 대화형 메뉴 (테마/시간/속도 질문)
+npx -y github:im-ian/fake-ai-waiting -t codex -T 30 -s fast       # 바로 시작
+npx -y github:im-ian/fake-ai-waiting --list                       # 시나리오 목록
+npx -y github:im-ian/fake-ai-waiting --help
 ```
+
+`-y` 는 첫 실행 때 뜨는 설치 확인 프롬프트 생략용. npx 가 임시 디렉터리에 받아서 실행하고, 두 번째부터는 캐시라 바로 뜬다.
+
+### 클론해서 쓰기
+
+```bash
+git clone --depth 1 https://github.com/im-ian/fake-ai-waiting
+cd fake-ai-waiting
+node cli.js                  # 또는 ./cli.js
+npm test                     # selfcheck
+```
+
+### 옵션
+
+| 옵션 | 값 | 기본 |
+|---|---|---|
+| `-t, --theme` | `codex` \| `claude` \| `gemini` \| `grok` | 없으면 대화형 메뉴 |
+| `-T, --time` | 분 단위. `0` = 무한 | `10` |
+| `-s, --speed` | `slow` \| `normal` \| `fast` \| `turbo`, 또는 글자당 ms 숫자 | `normal` |
+| `--scenario` | 시나리오 id (`--list` 로 확인) | 전체 셔플 |
+| `--no-effort` | 긴 사고 대기(effort 연출) 생략 | 대기 있음 |
+| `--plain` | alt screen·하단 고정줄 없이 평문 출력 | TTY 아니면 자동 |
+| `-l, --list` / `-h, --help` | 목록 / 도움말 | |
+
+### 조작
+
+```
+아무 글자 + Enter   메시지 큐에 적립 → 진행 중 작업 끝나면 받아서 이어감
+Esc                 가짜 인터럽트 (타이핑 끊김 → 입력 대기)
+Esc Esc / Ctrl-C    종료
+```
+
+터미널 크기 바뀌면 하단 상태줄 자동 재배치. 파이프로 넘기면(`| tee log`) TTY 가 아니라서 `--plain` 이 자동 적용됨.
 
 ## 조작
 
