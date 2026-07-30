@@ -26,13 +26,19 @@ GitHub Pages 배포: Settings → Pages → Source `Deploy from a branch` → �
 Node 18+ 만 있으면 됨. 클론도 install 도 필요 없음.
 
 ```bash
-npx -y github:im-ian/fake-ai-waiting                              # 대화형 메뉴 (테마/시간/속도 질문)
-npx -y github:im-ian/fake-ai-waiting -t codex -T 30 -s fast       # 바로 시작
-npx -y github:im-ian/fake-ai-waiting --list                       # 시나리오 목록
-npx -y github:im-ian/fake-ai-waiting --help
+npm exec --yes -- github:im-ian/fake-ai-waiting                        # 대화형 메뉴 (테마/시간/속도 질문)
+npm exec --yes -- github:im-ian/fake-ai-waiting -t codex -T 30 -s fast # 바로 시작
+npm exec --yes -- github:im-ian/fake-ai-waiting --list                 # 시나리오 목록
+npm exec --yes -- github:im-ian/fake-ai-waiting --help
 ```
 
-`-y` 는 첫 실행 때 뜨는 설치 확인 프롬프트 생략용. npx 가 임시 디렉터리에 받아서 실행하고, 두 번째부터는 캐시라 바로 뜬다.
+임시 디렉터리에 받아서 실행하고, 두 번째부터는 캐시라 바로 뜬다. `--yes` 는 첫 실행 설치 확인 프롬프트 생략용.
+
+`npx` 를 쓰고 싶으면 `-c` 로 감싸야 한다. npm 11 의 npx 는 git 스펙을 npm 서브커맨드로 오인해서 `Unknown command` 를 내기 때문 (npm 11.12.1 확인):
+
+```bash
+npx -y --package git+https://github.com/im-ian/fake-ai-waiting.git -c "fake-ai -t claude -T 10"
+```
 
 ### 클론해서 쓰기
 
