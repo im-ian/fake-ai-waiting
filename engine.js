@@ -59,19 +59,53 @@ function createSession({ theme, cfg, content, io }) {
     });
   }
 
+  /* --------------------------------------------------------- highlighting */
+
+  // Tiny cross-language tokenizer for diff hunks: keywords, strings,
+  // comments, numbers. Anything unmatched inherits the row colour.
+  const SYN_KW = new Set(('const let var function return if else for while import from export class new await async ' +
+    'try catch throw def self do end loop break local then not in is nil true false null undefined void ' +
+    'type interface enum struct func package task it describe expect ' +
+    'SELECT FROM WHERE GROUP BY ORDER CREATE INDEX TABLE ALTER ADD COLUMN ON AND OR NOT PRIMARY KEY EXISTS').split(' '));
+
+  function tokenize(code) {
+    const segs = [];
+    let i = 0, plain = '';
+    const flush = () => { if (plain) { segs.push(['', plain]); plain = ''; } };
+    while (i < code.length) {
+      const rest = code.slice(i);
+      let m;
+      if ((m = rest.match(/^(\/\/ |# |-- ).*$/))) { flush(); segs.push(['syn-c', m[0]]); i = code.length; continue; }
+      if ((m = rest.match(/^(['"`])(?:\\.|(?!\1).)*\1?/))) { flush(); segs.push(['syn-s', m[0]]); i += m[0].length; continue; }
+      if ((m = rest.match(/^[A-Za-z_$][\w$]*/))) {
+        if (SYN_KW.has(m[0])) { flush(); segs.push(['syn-k', m[0]]); } else plain += m[0];
+        i += m[0].length; continue;
+      }
+      if ((m = rest.match(/^\d[\d._]*/))) { flush(); segs.push(['syn-n', m[0]]); i += m[0].length; continue; }
+      plain += code[i++];
+    }
+    flush();
+    return segs;
+  }
+
   /* ------------------------------------------------------------- emitting */
 
   async function emit(spec) {
     const h = io.line(spec.cls || '');
     if (spec.mode === 'stream') {
+      // token-ish chunks with the occasional stall, not a metronome typewriter
       const txt = spec.segs[0][1];
-      for (let i = 0; i < txt.length; i++) {
+      let i = 0;
+      while (i < txt.length) {
         if (S.brk || S.stopped) return;             // cut off mid-word, like a real ^C
-        h.append(txt[i]);
-        S.tokens += 0.28;
-        let d = cfg.speed * rand(0.55, 1.7);
-        if (txt[i] === ' ') d *= 0.5;
-        if (/[.,;:)]/.test(txt[i])) d *= 3;
+        const n = 1 + Math.floor(Math.random() * 3);
+        const chunk = txt.slice(i, i + n);
+        h.append(chunk);
+        i += n;
+        S.tokens += chunk.length * 0.28;
+        let d = cfg.speed * n * rand(0.7, 1.6);
+        if (/[.,;:)]$/.test(chunk)) d *= 2.5;
+        if (Math.random() < 0.03) d += rand(220, 650);
         await sleep(d);
       }
       await sleep(spec.after ?? rand(120, 380));
@@ -82,12 +116,14 @@ function createSession({ theme, cfg, content, io }) {
     await sleep(spec.after ?? rand(20, 90));
   }
 
-  async function spinner(label, ms) {
+  async function spinner(label, ms, tick) {
     const h = io.line('spin');
     const t0 = now();
     let i = 0;
     while (!S.brk && !S.stopped && now() - t0 < ms) {
-      h.set(theme.spin(theme.spinFrames[i++ % theme.spinFrames.length], label, (now() - t0) / 1000));
+      const frac = Math.min(1, (now() - t0) / ms);
+      const lbl = tick ? `${label} · ${tick(frac)}` : label;
+      h.set(theme.spin(theme.spinFrames[i++ % theme.spinFrames.length], lbl, (now() - t0) / 1000));
       S.tokens += rand(4, 22);
       S.ctx = Math.max(3, S.ctx - 0.012);
       paintStatus();
@@ -120,7 +156,13 @@ function createSession({ theme, cfg, content, io }) {
       case 'tool':
         L.push(one(theme.bullet + theme.tool(ev.name, ev.arg), 'bold'));
         if (ev.result) L.push(one(theme.sub + ev.result, 'dim'));
-        for (const l of ev.out || []) L.push(one(theme.sub + l, ev.fail ? 'err' : 'dim'));
+        for (const l of ev.out || []) {
+          const t = l.trimStart();
+          const cls = t.startsWith('✓') ? 'ok'
+            : (t.startsWith('✗') || t.startsWith('→') || ev.fail) ? 'err' : 'dim';
+          // command output trickles in a touch slower than instant paint
+          L.push({ cls, segs: [['', theme.sub + l]], after: rand(50, 200) });
+        }
         break;
 
       case 'diff': {
@@ -133,7 +175,7 @@ function createSession({ theme, cfg, content, io }) {
         for (const [sign, code] of ev.hunk) {
           const rowCls = sign === '+' ? 'd-add' : sign === '-' ? 'd-del' : 'd-ctx';
           const n = sign === '-' ? oldN++ : sign === '+' ? newN++ : (oldN++, newN++);
-          L.push({ cls: rowCls, segs: [['ln', String(n).padStart(5)], ['', ` ${sign} ${code}`]] });
+          L.push({ cls: rowCls, segs: [['ln', String(n).padStart(5)], ['', ` ${sign} `], ...tokenize(code)] });
         }
         break;
       }
@@ -150,7 +192,7 @@ function createSession({ theme, cfg, content, io }) {
   async function playEvent(ev) {
     if (S.brk || S.stopped) return;
     const stall = ms => (cfg.effort ? ms : Math.min(ms, 1600));
-    if (ev.t === 'wait') return spinner(ev.label || 'Working', stall(ev.ms));
+    if (ev.t === 'wait') return spinner(ev.label || 'Working', stall(ev.ms), ev.tick);
     if (ev.ms) {
       const label = ev.t === 'think' ? pick(content.thinkLabels) : (ev.label || 'Working');
       await spinner(label, stall(ev.ms));

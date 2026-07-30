@@ -86,7 +86,7 @@ const SCENARIOS = [
         [' ', '  }'],
       ] },
       { t: 'tool', name: 'Edit', arg: 'src/auth/verifyToken.ts', result: 'Updated verifyToken.ts with 3 additions and 9 removals' },
-      { t: 'wait', ms: 14000, label: 'Running the auth suite' },
+      { t: 'wait', ms: 14000, label: 'Running the auth suite', tick: f => `${Math.min(38, Math.ceil(f * 38))}/38 tests` },
       { t: 'tool', name: 'Bash', arg: 'pnpm vitest run src/auth', out: [
         '✓ src/auth/expiry.test.ts (11)',
         '✓ src/auth/verifyToken.test.ts (18)',
@@ -181,7 +181,7 @@ const SCENARIOS = [
         ['+', 'CREATE INDEX CONCURRENTLY IF NOT EXISTS orders_created_at_id_idx'],
         ['+', '  ON orders (customer_id, created_at DESC, id DESC);'],
       ] },
-      { t: 'wait', ms: 21000, label: 'Building the index against the staging replica' },
+      { t: 'wait', ms: 21000, label: 'Building the index against the staging replica', tick: f => `${(f * 41).toFixed(1)}M/41M rows` },
       { t: 'tool', name: 'Bash', arg: 'psql -f bench/list_orders.sql', out: [
         'before  offset 8000 : 3184 ms  (Seq Scan + Sort)',
         'after   keyset      :   11 ms  (Index Scan orders_created_at_id_idx)',
@@ -238,7 +238,7 @@ const SCENARIOS = [
       { t: 'text', lines: [
         'Fourteen more `waitForTimeout` calls across the suite — every one of them is a flake waiting for a slow CI runner. Not fixing all of them in this pass, but they are the same defect.',
       ] },
-      { t: 'wait', ms: 26000, label: 'Repeating the spec 30× to prove it' },
+      { t: 'wait', ms: 26000, label: 'Repeating the spec 30× to prove it', tick: f => `run ${Math.min(120, Math.ceil(f * 120))}/120` },
       { t: 'tool', name: 'Bash', arg: 'npx playwright test billing.spec.ts --repeat-each=30 --workers=4', out: [
         '  120 passed (2.4m)',
         '  0 flaky',
@@ -394,7 +394,7 @@ const SCENARIOS = [
         ['+', '\t\t\tnext.ServeHTTP(w, r)'],
         ['+', '\t\t})'],
       ] },
-      { t: 'wait', ms: 18000, label: 'go test -race ./internal/limiter/...' },
+      { t: 'wait', ms: 18000, label: 'go test -race ./internal/limiter/...', tick: f => `${Math.min(14, Math.ceil(f * 14))}/14 packages` },
       { t: 'tool', name: 'Bash', arg: 'go test -race ./internal/limiter/...', out: [
         'ok  \tedge-proxy/internal/limiter\t6.812s',
         '--- PASS: TestNoBoundaryBurst (1.02s)',
@@ -452,7 +452,7 @@ const SCENARIOS = [
         'Also switched build and test to `--filter "...[origin/main]"` so a docs-only PR stops rebuilding all 34 packages.',
       ] },
       { t: 'tool', name: 'Bash', arg: 'git push -u origin ci/fix-cache-key', result: 'branch published' },
-      { t: 'wait', ms: 32000, label: 'Waiting on the CI run to compare timings' },
+      { t: 'wait', ms: 32000, label: 'Waiting on the CI run to compare timings', tick: f => ['queued', 'install', 'build', 'test'][Math.min(3, Math.floor(f * 4))] },
       { t: 'tool', name: 'Bash', arg: 'gh run watch 918241903', out: [
         '✓ install (cache hit: Linux-pnpm-3ba77e1)   14s',
         '✓ build  (6 of 34 packages affected)      1m 52s',
@@ -589,7 +589,7 @@ const SCENARIOS = [
         ['+', '  end'],
         ['+', 'end'],
       ] },
-      { t: 'wait', ms: 34000, label: 'Backfilling 12,043,118 rows (batch 2000, lag-aware)' },
+      { t: 'wait', ms: 34000, label: 'Backfilling 12,043,118 rows (batch 2000, lag-aware)', tick: f => `batch ${Math.min(6022, 1 + Math.floor(f * 6022))}/6022` },
       { t: 'tool', name: 'Bash', arg: 'bundle exec rake backfill_names', out: [
         'batch 1/6022 … batch 6022/6022',
         'exact            : 11,406,884',

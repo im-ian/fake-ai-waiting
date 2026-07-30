@@ -217,6 +217,12 @@ select {
 .d-hdr { color: var(--dim); }
 .d-add .ln, .d-del .ln, .d-ctx .ln { color: var(--lnum); }
 
+/* syntax inside hunks */
+.syn-k { color: var(--syn-k); }
+.syn-s { color: var(--syn-s); }
+.syn-c { color: var(--syn-c); font-style: italic; }
+.syn-n { color: var(--syn-n); }
+
 /* chrome bits */
 .tabbar {
   display: flex;

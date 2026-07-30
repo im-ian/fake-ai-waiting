@@ -39,6 +39,10 @@ function styles(pal) {
     'd-add': BG(pal.addBgTerm) + FG(pal.addFg),
     'd-del': BG(pal.delBgTerm) + FG(pal.delFg),
     'd-ctx': FG(pal.dim),
+    'syn-k': FG(pal.synK),
+    'syn-s': FG(pal.synS),
+    'syn-c': '\x1b[3m' + FG(pal.synC),
+    'syn-n': FG(pal.synN),
   };
 }
 
@@ -92,13 +96,15 @@ function makeIO(theme, { plain }) {
     line(rowCls) {
       const rowStyle = ST[rowCls] || '';
       const fill = rowCls === 'd-add' || rowCls === 'd-del';
+      // per-seg styles reset the row, so diff rows re-assert their background
+      const bg = rowCls === 'd-add' ? BG(pal.addBgTerm) : rowCls === 'd-del' ? BG(pal.delBgTerm) : '';
       let len = 0;
       w('\n' + rowStyle);
       return {
         write(segs) {
           let s = '';
           // empty seg class means "inherit the row" — never the default fg
-          for (const [cls, text] of segs) s += RESET + (cls ? ST[cls] || rowStyle : rowStyle) + text;
+          for (const [cls, text] of segs) s += RESET + bg + (cls ? ST[cls] || rowStyle : rowStyle) + text;
           const width = segs.reduce((n, x) => n + dw(x[1]), 0);
           // pad diff rows so the background reaches the right edge, like a web diff
           w(s + (fill ? ' '.repeat(Math.max(0, COLS() - width)) : '') + RESET);

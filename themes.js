@@ -33,6 +33,7 @@ const THEMES = {
       `${fmtClock(s.elapsed)} · ${fmtNum(s.tokens)} tokens · ${s.ctx}% context left`,
     ],
     pal: {
+      synK: '#569cd6', synS: '#ce9178', synC: '#6a9955', synN: '#b5cea8',
       bg: '#171717', fg: '#cfcfcf', fgb: '#f2f2f2', dim: '#8a8a8a',
       accent: '#4ec9b0', think: '#9a9a9a', user: '#d4d4d4',
       rule: '#262626', rule2: '#3a3a3a', tabBg: '#262626', lnum: '#7a7a7a',
@@ -66,6 +67,7 @@ const THEMES = {
       `${s.ctx}% context left · ${fmtClock(s.elapsed)}`,
     ],
     pal: {
+      synK: '#c9a3e8', synS: '#d9b48f', synC: '#77906f', synN: '#a8c6e8',
       bg: '#131316', fg: '#dcd9d4', fgb: '#f4f1ec', dim: '#7d7a74',
       accent: '#d97757', think: '#9a9691', user: '#a8a5a0',
       rule: '#26252a', rule2: '#4a474f', tabBg: '#26252a', lnum: '#6f6c66',
@@ -98,6 +100,7 @@ const THEMES = {
       `${s.model} (${s.ctx}% context left)`,
     ],
     pal: {
+      synK: '#8ab4f8', synS: '#f2b8c6', synC: '#5f7e6e', synN: '#c58af9',
       bg: '#0b0f19', fg: '#d3dcea', fgb: '#f0f5fb', dim: '#6d7d94',
       accent: '#8ab4f8', think: '#a3a0d8', user: '#c5d2e4',
       rule: '#1b2333', rule2: '#33405a', tabBg: '#162030', lnum: '#5b6b82',
@@ -128,6 +131,7 @@ const THEMES = {
       `${fmtClock(s.elapsed)} · ${fmtNum(s.tokens)} tok`,
     ],
     pal: {
+      synK: '#ffffff', synS: '#a8c7fa', synC: '#5c5c5c', synN: '#d0d0d0',
       bg: '#000000', fg: '#d6d6d6', fgb: '#ffffff', dim: '#7a7a7a',
       accent: '#ffffff', think: '#9b9b9b', user: '#c8c8c8',
       rule: '#202020', rule2: '#333333', tabBg: '#141414', lnum: '#666666',
