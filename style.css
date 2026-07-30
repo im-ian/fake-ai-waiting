@@ -1,0 +1,230 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Pretendard", "Apple SD Gothic Neo", sans-serif;
+}
+
+html, body { height: 100%; margin: 0; }
+body {
+  background: #0c0c0e;
+  color: #e6e6e6;
+  font-family: var(--ui);
+  -webkit-font-smoothing: antialiased;
+}
+kbd {
+  font-family: var(--mono);
+  font-size: .85em;
+  border: 1px solid #4a4a52;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: #cfcfd4;
+}
+
+/* ---------- config screen ---------- */
+
+#config {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+}
+#config h1 {
+  font-size: 28px;
+  margin: 0 0 10px;
+  letter-spacing: -.02em;
+}
+#config .sub { margin: 0 0 36px; color: #9b9ba4; line-height: 1.7; font-size: 14px; }
+
+.field { margin-bottom: 26px; min-width: 0; }
+.field > label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #7c7c86;
+  margin-bottom: 10px;
+}
+.row { display: flex; gap: 28px; flex-wrap: wrap; }
+.row > .field { flex: 1 1 260px; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.card {
+  appearance: none;
+  text-align: left;
+  background: #15151a;
+  border: 1px solid #26262e;
+  border-radius: 10px;
+  padding: 14px;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color .12s, background .12s;
+}
+.card:hover { border-color: #3a3a46; }
+.card.on { border-color: var(--card-accent, #6e6ef0); background: #1b1b22; }
+.card .name { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; }
+.card .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--card-accent, #6e6ef0); }
+.card .desc { margin-top: 6px; font-size: 12px; color: #85858f; font-family: var(--mono); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button {
+  appearance: none;
+  background: #15151a;
+  border: 1px solid #26262e;
+  color: #c9c9d0;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.chips button:hover { border-color: #3a3a46; }
+.chips button.on { background: #e8e8ee; border-color: #e8e8ee; color: #111; }
+
+select {
+  width: 100%;
+  background: #15151a;
+  border: 1px solid #26262e;
+  color: #d8d8de;
+  border-radius: 8px;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 13px;
+}
+.checks { display: flex; flex-direction: column; gap: 9px; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #bcbcc4; cursor: pointer; }
+.check input { accent-color: #6e6ef0; }
+
+#start {
+  appearance: none;
+  width: 100%;
+  margin-top: 8px;
+  background: #e8e8ee;
+  color: #111;
+  border: 0;
+  border-radius: 10px;
+  padding: 15px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+#start:hover { background: #fff; }
+.foot { margin-top: 20px; font-size: 12px; color: #62626c; text-align: center; }
+
+/* ---------- stage (terminal) ---------- */
+
+/* palette comes from THEMES[x].pal, injected as --bg/--fg/... on #stage */
+#stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg, #111);
+  color: var(--fg, #ddd);
+  font-family: var(--mono);
+  font-size: clamp(11px, 1.05vw, 15px);
+  line-height: 1.55;
+  cursor: none;
+  overflow: hidden;
+  user-select: none;   /* double click exits, it should not select text */
+}
+#stage[hidden] { display: none; }
+
+#out {
+  flex: 1;
+  overflow: hidden;
+  padding: 10px 14px 4px;
+  /* transcript grows from the bottom up, like a real terminal */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.line, .gap { flex: none; }
+#top, #bottom { flex: none; }
+
+.line { white-space: pre-wrap; word-break: break-word; }
+.dim { color: var(--dim); }
+.accent { color: var(--accent); }
+.bold { font-weight: 700; color: var(--fgb); }
+.err { color: var(--del-fg); }
+.ok { color: var(--add-fg); }
+.thinking { color: var(--think); font-style: italic; }
+.user { color: var(--user); }
+.spin { color: var(--fgb); }
+.gap { height: .8em; }
+
+/* diff */
+.d-add { background: var(--add-bg); color: var(--add-fg); }
+.d-del { background: var(--del-bg); color: var(--del-fg); }
+.d-ctx { color: var(--dim); }
+.d-hdr { color: var(--dim); }
+.d-add .ln, .d-del .ln, .d-ctx .ln { color: var(--lnum); }
+
+/* chrome bits */
+.tabbar {
+  display: flex;
+  gap: 2px;
+  padding: 6px 8px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: .92em;
+}
+.tab {
+  padding: 4px 12px;
+  border-radius: 6px 6px 0 0;
+  background: var(--tab-bg);
+  color: var(--fgb);
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+.tab .live { color: var(--add-fg); }
+.tab .x { color: var(--dim); }
+
+.banner { padding: 10px 14px 0; color: var(--dim); }
+.banner .big { color: var(--accent); font-weight: 700; }
+
+.promptbox { padding: 6px 14px 4px; }
+.queue { padding-bottom: 2px; }
+.inputline { display: flex; align-items: baseline; }
+.inputline .pre { flex: none; }
+.inputbox {
+  border: 1px solid var(--rule2);
+  border-radius: 6px;
+  padding: 5px 9px;
+}
+.caret {
+  flex: none;
+  width: .55em;
+  animation: blink 1.1s steps(1, end) infinite;
+}
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.ghost { flex: 1; min-width: 0; }
+.statusbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 14px 8px;
+  color: var(--dim);
+  font-size: .92em;
+}
+.statusbar .right { text-align: right; }
+.caret { background: var(--fg); color: var(--bg); }
+.box { color: var(--rule2); }
+.box .inner { color: var(--dim); }
+
+#hint {
+  position: absolute;
+  bottom: 12px;
+  right: 14px;
+  font-family: var(--ui);
+  font-size: 12px;
+  color: #ffffff;
+  background: rgba(0, 0, 0, .55);
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 6px;
+  padding: 5px 9px;
+  transition: opacity .6s;
+}
+#hint.fade { opacity: 0; }

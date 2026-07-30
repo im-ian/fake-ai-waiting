@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fake AI Working Screen — 일하는 척 하기</title>
+<meta name="description" content="Codex / Claude Code / Gemini CLI / Grok CLI 화면을 흉내내는 장난용 가짜 AI 작업 화면.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main id="config">
+  <header>
+    <h1>Fake AI Working Screen</h1>
+    <p class="sub">테마와 시간을 고르고 시작하면 AI CLI 가 열심히 일하는 화면이 재생됨.<br>
+      종료는 <kbd>Esc</kbd>. 아무 키나 눌러도 화면은 계속 돌아감.</p>
+  </header>
+
+  <section class="field">
+    <label>테마</label>
+    <div class="cards" id="pick-theme"></div>
+  </section>
+
+  <section class="row">
+    <div class="field">
+      <label>재생 시간</label>
+      <div class="chips" id="pick-dur">
+        <button data-val="60">1분</button>
+        <button data-val="300">5분</button>
+        <button data-val="600" class="on">10분</button>
+        <button data-val="1800">30분</button>
+        <button data-val="3600">60분</button>
+        <button data-val="0">무한</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>타이핑 속도</label>
+      <div class="chips" id="pick-speed">
+        <button data-val="42">느림</button>
+        <button data-val="24" class="on">보통</button>
+        <button data-val="13">빠름</button>
+        <button data-val="6">아주 빠름</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="row">
+    <div class="field">
+      <label>시나리오</label>
+      <select id="pick-scenario"></select>
+    </div>
+    <div class="field">
+      <label>연출</label>
+      <div class="checks">
+        <label class="check"><input type="checkbox" id="opt-fs" checked> 전체화면으로 시작</label>
+        <label class="check"><input type="checkbox" id="opt-effort" checked> effort 로딩 연출 (긴 대기)</label>
+      </div>
+    </div>
+  </section>
+
+  <button id="start">시작</button>
+  <p class="foot">전부 가짜다. 네트워크 요청 없음, 서버 없음, 저장되는 건 브라우저에 남는 설정뿐.</p>
+</main>
+
+<div id="stage" hidden>
+  <div id="top"></div>
+  <div id="out"></div>
+  <div id="bottom"></div>
+  <div id="hint"><kbd>Esc</kbd> 로 종료</div>
+</div>
+
+<script src="themes.js"></script>
+<script src="scenarios.js"></script>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
