@@ -126,7 +126,7 @@ select {
   font-family: var(--mono);
   font-size: clamp(11px, 1.05vw, 15px);
   line-height: 1.55;
-  cursor: none;
+  cursor: default;
   overflow: hidden;
   user-select: none;   /* double click exits, it should not select text */
 }
