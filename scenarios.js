@@ -85,7 +85,7 @@ const SCENARIOS = [
         [' ', '    return rotate(claims);'],
         [' ', '  }'],
       ] },
-      { t: 'tool', name: 'Edit', arg: 'src/auth/verifyToken.ts', result: 'Updated verifyToken.ts with 3 additions and 9 removals' },
+      { t: 'diff', file: 'src/auth/verifyToken.ts', add: 3, del: 9, hunk: [] },
       { t: 'wait', ms: 14000, label: 'Running the auth suite', tick: f => `${Math.min(38, Math.ceil(f * 38))}/38 tests` },
       { t: 'tool', name: 'Bash', arg: 'pnpm vitest run src/auth', out: [
         '✓ src/auth/expiry.test.ts (11)',
@@ -308,7 +308,7 @@ const SCENARIOS = [
       { t: 'text', lines: [
         'Three other callers use the same serializer. Two already prefetch; `ExportJob` does not, so it would have kept the N+1. Adding the same prefetch there.',
       ] },
-      { t: 'tool', name: 'Edit', arg: 'inventory/tasks.py', result: 'Updated tasks.py with 6 additions and 1 removal' },
+      { t: 'diff', file: 'inventory/tasks.py', add: 6, del: 1, hunk: [] },
       { t: 'wait', ms: 11000, label: 'Re-profiling' },
       { t: 'tool', name: 'Bash', arg: 'python manage.py shell -c "$(cat scripts/profile_dashboard.py)"', out: [
         'total queries: 11   (was 947)',
