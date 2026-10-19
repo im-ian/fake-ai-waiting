@@ -3,9 +3,10 @@
    the CLI turns it into truecolor ANSI.
 
    Versions and models track the real CLIs as of 2026-10: Claude Code 2.1.303,
-   Codex 0.163.0, Gemini CLI 0.64.0, Grok Build 1.0.62.
+   Codex 0.163.0, Antigravity CLI 1.4.2, Grok Build 1.0.62.
 
-   banner lines are a plain string (dim) or a seg list [[cls, text], ...].
+   banner lines are a plain string (dim) or a seg list [[cls, text], ...]; a
+   banner seg class may also be a literal '#rrggbb' colour, for logo art.
    input is how the prompt is framed: 'rules' (a line above and below),
    'band' (a filled bar in pal.userBg) or 'box' (a rounded border). */
 
@@ -19,11 +20,11 @@ const clockNow = () => new Date().toLocaleTimeString('en-US', { hour: 'numeric',
 // scenarios name tools the Claude Code way; other CLIs label them in their own words
 const verb = (names, name, arg) => `${names[name] ?? name}${arg ? ' ' + arg : ''}`;
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
-// three-stop stand-in for Gemini's horizontal logo gradient
-function gradient(line) {
-  const c = [...line], k = Math.ceil(c.length / 3);
-  return [['syn-k', c.slice(0, k).join('')], ['syn-n', c.slice(k, 2 * k).join('')], ['syn-s', c.slice(2 * k).join('')]];
-}
+// logo art coloured glyph by glyph, padded so the text beside it lines up
+const paint = (art, colors) => {
+  let i = 0;
+  return [...art.padEnd(18)].map(ch => (ch === ' ' ? ['', ch] : [colors[i++], ch]));
+};
 
 const THEMES = {
   codex: {
@@ -110,51 +111,39 @@ const THEMES = {
   },
 
   gemini: {
-    label: 'Gemini CLI',
-    desc: 'gemini-3.1-pro-preview',
-    model: 'gemini-3.1-pro-preview',
-    input: 'band',
-    banner: () => [
-      ...[
-        ' ▝▜▄      ▗█▀▀▜▙▝█▛▀▀▌▜██▖▟██▘▜█▘▜██▖▝█▛▝█▛',
-        '   ▝▜▄    █▌     █▙▟  ▐█▝█▛▐█ ▐█ ▐█▝█▖█▌ █▌',
-        '  ▗▟▀     ▜▙ ▝█▛ █▌▝ ▖▐█   ▐█ ▐█ ▐█ ▝██▌ █▌',
-        ' ▝▀        ▀▀▀▀▘▝▀▀▀▀▘▀▀▘  ▀▀▘▀▀▘▀▀▘ ▝▀▀▝▀▀',
-      ].map(gradient),
-      '',
-      [['bold', ' Gemini CLI'], ['dim', ' v0.64.0']],
-      '',
-      'Tips for getting started:',
-      '1. Create GEMINI.md files to customize your interactions',
-      '2. /help for more information',
-      '3. Ask coding questions, edit code or run commands',
-      '4. Be specific for the best results',
+    label: 'Antigravity CLI',
+    desc: 'gemini-3.8-flash',
+    model: 'Gemini 3.8 Flash · high',
+    input: 'rules',
+    banner: sc => [
+      [...paint('      ▄▀▀▄', ['#dbb131', '#f2922e', '#f07236', '#f0583b']), ['accent', 'Antigravity CLI 1.4.2']],
+      [...paint('     ▀▀▀▀▀▀', ['#9ec345', '#b5b43e', '#e2993d', '#f67a34', '#f86a35', '#ef5442']), ['dim', 'Gemini 3.8 Flash (High)']],
+      [...paint('    ▀▀▀▀▀▀▀▀', ['#7cc251', '#71c25c', '#5ca98f', '#5c91b3', '#8373b0', '#746fc3', '#995da8', '#9c5b97']), ['dim', sc.cwd]],
+      paint('   ▄▀▀    ▀▀▄', ['#6dc694', '#61c37d', '#43aeab', '#4a80ea', '#6c73d8', '#6579e1']),
+      paint('  ▄▀▀      ▀▀▄', ['#67b9f4', '#6bc7a3', '#64b6f6', '#3886fb', '#4881f4', '#3d85fc']),
     ],
-    ghost: 'Type your message or @path/to/file',
+    ghost: '',
     userPre: '> ',
-    bullet: '✓  ',
-    sub: '    ',
-    textPre: '✦ ',
-    thinkHdr: ' Thinking...',
-    thinkPre: ' │ ',
-    tool: (name, arg) => verb({ Bash: 'Shell', Read: 'ReadFile', Grep: 'SearchText', Write: 'WriteFile', TodoWrite: 'WriteTodos' }, name, arg),
-    editHdr: (f, a, d) => [`Edit ${f}`, ` → Accepted (+${a}, -${d})`],
-    spin: (fr, label, s) => `${fr} ${label}... (esc to cancel, ${fmtClock(s)})`,
-    spinFrames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
-    interrupt: 'ℹ Request cancelled.',
-    queued: n => `⏸ ${n} queued`,
+    bullet: '● ',
+    sub: '  ⎿  ',
+    textPre: '  ',
+    thinkHdr: '○ Thinking…',
+    tool: (name, arg) => `${{ Bash: 'Ran', Read: 'Read 1 file', Grep: 'Searched', Write: 'Created 1 file', TodoWrite: 'Updated plan' }[name] ?? name}${arg ? ` (${arg})` : ''}`,
+    editHdr: (f, a, d) => [`Edited 1 file (${f})`, ` +${a} -${d}`],
+    spin: (fr, label) => `${fr}  ${label}...`,
+    spinFrames: ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'],
+    verbs: ['Generating'],
+    interrupt: '  ⎿  Interrupted · What should Antigravity CLI do instead?',
+    queued: (n, q) => `▸ ${q[n - 1]} (alt+m to send immediately)`,
     idle: 'Waiting for input',
-    status: s => [
-      `${s.cwd} (${s.branch}*)    no sandbox`,
-      `${s.model}    ${100 - s.ctx}% used`,
-    ],
+    status: s => ['esc to cancel', s.model],
     pal: {
-      synK: '#8ab4f8', synS: '#f2b8c6', synC: '#5f7e6e', synN: '#c58af9',
-      bg: '#0b0f19', fg: '#d3dcea', fgb: '#f0f5fb', dim: '#6d7d94',
-      accent: '#8ab4f8', think: '#a3a0d8', user: '#c5d2e4', userBg: '#151c2b',
-      rule: '#1b2333', rule2: '#33405a', tabBg: '#162030', lnum: '#5b6b82',
-      addFg: '#8fe0bd', addBg: 'rgba(60,160,120,.18)', addBgTerm: '#122a24',
-      delFg: '#f0a0b0', delBg: 'rgba(230,90,110,.16)', delBgTerm: '#2c1a20',
+      synK: '#8ab4f8', synS: '#81c995', synC: '#5f6368', synN: '#fdd663',
+      bg: '#0f1115', fg: '#d7dae0', fgb: '#f1f3f4', dim: '#80868b',
+      accent: '#8ab4f8', think: '#9aa0a6', user: '#669df6',
+      rule: '#2a2d33', rule2: '#5f6368', tabBg: '#1f2329', lnum: '#80868b',
+      addFg: '#81c995', addBg: 'rgba(95,135,95,.3)', addBgTerm: '#1e3323',
+      delFg: '#f28b82', delBg: 'rgba(200,80,80,.22)', delBgTerm: '#3a1f1f',
     },
   },
 
