@@ -155,17 +155,21 @@ function createSession({ theme, cfg, content, io }) {
         for (const l of ev.lines) L.push(streamed((theme.thinkPre ?? '  ') + l, 'thinking'));
         break;
 
-      case 'tool':
+      case 'tool': {
         L.push(one(theme.bullet + theme.tool(ev.name, ev.arg), 'bold'));
-        if (ev.result) L.push(one(theme.sub + ev.result, 'dim'));
+        // only the first output row gets the ⎿ / └ elbow, the rest hang under it
+        let rows = 0;
+        const sub = () => (rows++ ? ' '.repeat(theme.sub.length) : theme.sub);
+        if (ev.result) L.push(one(sub() + ev.result, 'dim'));
         for (const l of ev.out || []) {
           const t = l.trimStart();
           const cls = t.startsWith('✓') ? 'ok'
             : (t.startsWith('✗') || t.startsWith('→') || ev.fail) ? 'err' : 'dim';
           // command output trickles in a touch slower than instant paint
-          L.push({ cls, segs: [['', theme.sub + l]], after: rand(50, 200) });
+          L.push({ cls, segs: [['', sub() + l]], after: rand(50, 200) });
         }
         break;
+      }
 
       case 'diff': {
         const [hdr, tail] = theme.editHdr(ev.file, ev.add, ev.del);
