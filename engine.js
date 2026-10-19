@@ -55,7 +55,7 @@ function createSession({ theme, cfg, content, io }) {
       pre: theme.userPre,
       buf,
       ghost: buf ? '' : theme.ghost,
-      queueLabel: S.queue.length ? theme.queued(S.queue.length) : '',
+      queueLabel: S.queue.length ? theme.queued(S.queue.length, S.queue) : '',
     });
   }
 
@@ -145,12 +145,14 @@ function createSession({ theme, cfg, content, io }) {
         break;
 
       case 'text':
-        for (const l of ev.lines) L.push(streamed(theme.textPre + l, ''));
+        // one message: only the first paragraph carries the glyph, the rest hang under it
+        ev.lines.forEach((l, i) =>
+          L.push(streamed((i ? ' '.repeat(theme.textPre.length) : theme.textPre) + l, '')));
         break;
 
       case 'think':
         L.push(one(theme.thinkHdr, 'dim'));
-        for (const l of ev.lines) L.push(streamed('  ' + l, 'thinking'));
+        for (const l of ev.lines) L.push(streamed((theme.thinkPre ?? '  ') + l, 'thinking'));
         break;
 
       case 'tool':
@@ -175,7 +177,7 @@ function createSession({ theme, cfg, content, io }) {
         for (const [sign, code] of ev.hunk) {
           const rowCls = sign === '+' ? 'd-add' : sign === '-' ? 'd-del' : 'd-ctx';
           const n = sign === '-' ? oldN++ : sign === '+' ? newN++ : (oldN++, newN++);
-          L.push({ cls: rowCls, segs: [['ln', String(n).padStart(5)], ['', ` ${sign} `], ...tokenize(code)] });
+          L.push({ cls: rowCls, segs: [['ln', String(n).padStart(theme.lnWidth ?? 5)], ['', ` ${sign}`], ...tokenize(code)] });
         }
         break;
       }
@@ -194,7 +196,7 @@ function createSession({ theme, cfg, content, io }) {
     const stall = ms => (cfg.effort ? ms : Math.min(ms, 1600));
     if (ev.t === 'wait') return spinner(ev.label || 'Working', stall(ev.ms), ev.tick);
     if (ev.ms) {
-      const label = ev.t === 'think' ? pick(content.thinkLabels) : (ev.label || 'Working');
+      const label = ev.t === 'think' ? pick(theme.verbs || content.thinkLabels) : (ev.label || 'Working');
       await spinner(label, stall(ev.ms));
     }
     for (const spec of format(ev)) {
@@ -252,12 +254,18 @@ function createSession({ theme, cfg, content, io }) {
     paintInput();
     paintStatus();
     await typePrompt(sc.prompt);
+    const t0 = now();
     for (const ev of sc.events) {
       if (S.stopped) return;
       await playEvent(ev);
       if (S.brk) await handleInterrupt();
       if (S.queue.length) await drainQueue();
       if (S.endAt && now() > S.endAt) return;
+    }
+    // the "Worked for 3m 12s" footer some CLIs leave under a finished turn
+    if (theme.done && !S.stopped) {
+      await emit(one(theme.done((now() - t0) / 1000), 'dim'));
+      io.gap();
     }
     await sleep(rand(1500, 4000));
   }
