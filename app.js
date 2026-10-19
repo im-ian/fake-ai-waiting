@@ -3,8 +3,11 @@
 const $ = sel => document.querySelector(sel);
 const stage = $('#stage'), out = $('#out'), top_ = $('#top'), bottom = $('#bottom'), hint = $('#hint');
 const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+// a '#rrggbb' class is a literal colour (logo art in banners)
 const segsHtml = segs => segs.map(([cls, text]) =>
-  cls ? `<span class="${cls}">${esc(text)}</span>` : esc(text)).join('');
+  !cls ? esc(text)
+    : cls[0] === '#' ? `<span style="color:${cls}">${esc(text)}</span>`
+    : `<span class="${cls}">${esc(text)}</span>`).join('');
 
 let session = null;
 

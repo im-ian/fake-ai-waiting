@@ -97,7 +97,9 @@ function makeIO(theme, { plain }) {
     chrome(sc, _theme, first) {
       if (theme.tab) w(`\n${FG(pal.addFg)}●${RESET} ${FG(pal.fgb)}${sc.branch}${RESET} ${FG(pal.dim)}✕${RESET}\n`);
       const banner = first && theme.banner?.(sc);
-      const segs = l => (typeof l === 'string' ? [['dim', l]] : l).map(([c, t]) => RESET + (ST[c] || ST['']) + t).join('');
+      // a '#rrggbb' class is a literal colour (logo art)
+      const segs = l => (typeof l === 'string' ? [['dim', l]] : l)
+        .map(([c, t]) => RESET + (c[0] === '#' ? FG(c) : ST[c] || ST['']) + t).join('');
       if (banner) w('\n' + banner.map(l => segs(l) + RESET).join('\n') + '\n');
       drawFooter();
     },
