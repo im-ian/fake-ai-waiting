@@ -50,7 +50,8 @@ function styles(pal) {
 
 function makeIO(theme, { plain }) {
   const pal = theme.pal, ST = styles(pal);
-  const footerRows = 3;
+  const rules = theme.input === 'rules';
+  const footerRows = rules ? 5 : 3;      // queue, [rule], input, [rule], status
   let queueLabel = '', inputView = { pre: '', buf: '', ghost: '' }, statusView = { left: '', right: '' };
 
   const region = () => {
@@ -66,17 +67,24 @@ function makeIO(theme, { plain }) {
   function drawFooter() {
     if (plain) return;
     const h = ROWS(), cols = COLS();
-    drawRow(h - 2, queueLabel ? FG(pal.accent) + clip(queueLabel, cols) : '');
+    let row = h - footerRows + 1;
+    drawRow(row++, queueLabel ? FG(pal.accent) + clip(queueLabel, cols) : '');
 
+    const rule = FG(pal.rule2) + '─'.repeat(cols);
+    if (rules) drawRow(row++, rule);
     const { pre, buf, ghost } = inputView;
-    const box = theme.box;
-    const inner = FG(pal.accent) + pre + RESET + FG(pal.fg) + buf + RESET
-      + BG(pal.fg) + ' ' + RESET + (ghost ? FG(pal.dim) + clip(ghost, cols - dw(pre + buf) - 6) : '');
-    drawRow(h - 1, box ? FG(pal.rule2) + '│ ' + RESET + inner : inner);
+    // a band re-asserts its background after the caret and pads to the edge
+    const band = theme.input === 'band' ? BG(pal.userBg) : '';
+    const lead = theme.input === 'box' ? '│ ' : band ? ' ' : '';
+    const g = ghost ? clip(ghost, cols - dw(lead + pre + buf) - 6) : '';
+    const fill = band ? ' '.repeat(Math.max(0, cols - dw(lead + pre + buf + g) - 1)) : '';
+    drawRow(row++, band + FG(pal.rule2) + lead + FG(pal.accent) + pre + FG(pal.fg) + buf
+      + RESET + BG(pal.fg) + ' ' + RESET + band + FG(pal.dim) + g + fill);
+    if (rules) drawRow(row++, rule);
 
     const { left, right } = statusView;
     const pad = Math.max(1, cols - dw(left) - dw(right) - 1);
-    drawRow(h, FG(pal.dim) + clip(left, cols) + ' '.repeat(pad) + right);
+    drawRow(row, FG(pal.dim) + clip(left, cols) + ' '.repeat(pad) + right);
   }
 
   if (!plain) {
@@ -88,16 +96,18 @@ function makeIO(theme, { plain }) {
   return {
     chrome(sc, _theme, first) {
       if (theme.tab) w(`\n${FG(pal.addFg)}●${RESET} ${FG(pal.fgb)}${sc.branch}${RESET} ${FG(pal.dim)}✕${RESET}\n`);
-      const banner = first && (typeof theme.banner === 'function' ? theme.banner(sc) : theme.banner);
-      if (banner) w('\n' + banner.map((l, i) => (i === 0 ? FG(pal.accent) : FG(pal.dim)) + l + RESET).join('\n') + '\n');
+      const banner = first && theme.banner?.(sc);
+      const segs = l => (typeof l === 'string' ? [['dim', l]] : l).map(([c, t]) => RESET + (ST[c] || ST['']) + t).join('');
+      if (banner) w('\n' + banner.map(l => segs(l) + RESET).join('\n') + '\n');
       drawFooter();
     },
 
     line(rowCls) {
       const rowStyle = ST[rowCls] || '';
-      const fill = rowCls === 'd-add' || rowCls === 'd-del';
-      // per-seg styles reset the row, so diff rows re-assert their background
-      const bg = rowCls === 'd-add' ? BG(pal.addBgTerm) : rowCls === 'd-del' ? BG(pal.delBgTerm) : '';
+      // per-seg styles reset the row, so filled rows (diffs, user band) re-assert their background
+      const bg = rowCls === 'd-add' ? BG(pal.addBgTerm) : rowCls === 'd-del' ? BG(pal.delBgTerm)
+        : rowCls === 'user' && pal.userBg ? BG(pal.userBg) : '';
+      const fill = !!bg;
       let len = 0;
       w('\n' + rowStyle);
       return {
@@ -106,7 +116,7 @@ function makeIO(theme, { plain }) {
           // empty seg class means "inherit the row" — never the default fg
           for (const [cls, text] of segs) s += RESET + bg + (cls ? ST[cls] || rowStyle : rowStyle) + text;
           const width = segs.reduce((n, x) => n + dw(x[1]), 0);
-          // pad diff rows so the background reaches the right edge, like a web diff
+          // pad filled rows so the background reaches the right edge, like the web build
           w(s + (fill ? ' '.repeat(Math.max(0, COLS() - width)) : '') + RESET);
         },
         append(txt) { len += dw(txt); w(txt); },

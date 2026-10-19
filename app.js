@@ -3,6 +3,8 @@
 const $ = sel => document.querySelector(sel);
 const stage = $('#stage'), out = $('#out'), top_ = $('#top'), bottom = $('#bottom'), hint = $('#hint');
 const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const segsHtml = segs => segs.map(([cls, text]) =>
+  cls ? `<span class="${cls}">${esc(text)}</span>` : esc(text)).join('');
 
 let session = null;
 
@@ -15,18 +17,18 @@ const domIO = {
     top_.innerHTML = theme.tab
       ? `<div class="tabbar"><div class="tab"><span class="live">●</span>${esc(sc.branch)}<span class="x">✕</span></div></div>`
       : '';
-    const banner = first && (typeof theme.banner === 'function' ? theme.banner(sc) : theme.banner);
+    const banner = first && theme.banner?.(sc);
     if (banner) {
       const el = document.createElement('div');
       el.className = 'banner';
-      el.innerHTML = banner.map((l, i) => `<div${i === 0 ? ' class="big"' : ''}>${esc(l)}</div>`).join('');
+      el.innerHTML = banner.map(l => `<div>${typeof l === 'string' ? esc(l) : segsHtml(l)}</div>`).join('');
       out.appendChild(el);
     }
     if (!bottom.firstChild) {
       bottom.innerHTML = `
         <div class="promptbox">
           <div class="line queue dim" hidden></div>
-          <div class="line inputline${theme.box ? ' inputbox' : ''}"><span class="pre accent"></span><span class="buf"></span><span class="caret">&nbsp;</span><span class="ghost dim"></span></div>
+          <div class="line inputline${theme.input ? ' input-' + theme.input : ''}"><span class="pre accent"></span><span class="buf"></span><span class="caret">&nbsp;</span><span class="ghost dim"></span></div>
         </div>
         <div class="statusbar"><span class="left"></span><span class="right"></span></div>`;
       domIO.el = {
@@ -48,8 +50,7 @@ const domIO = {
     out.scrollTop = out.scrollHeight;
     return {
       write(segs) {
-        el.innerHTML = segs.map(([cls, text]) =>
-          cls ? `<span class="${cls}">${esc(text)}</span>` : esc(text)).join('');
+        el.innerHTML = segsHtml(segs);
         out.scrollTop = out.scrollHeight;
       },
       append(txt) { el.textContent += txt; out.scrollTop = out.scrollHeight; },
@@ -92,6 +93,8 @@ function begin(cfg) {
   out.innerHTML = '';
   bottom.innerHTML = '';
   domIO.el = null;
+  stage.removeAttribute('style');   // drop the previous theme's vars (userBg is optional)
+  stage.classList.toggle('banded', !!theme.pal.userBg);
   for (const [k, v] of Object.entries(theme.pal)) {
     stage.style.setProperty('--' + k.replace(/[A-Z]/g, m => '-' + m.toLowerCase()), v);
   }

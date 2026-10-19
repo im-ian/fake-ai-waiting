@@ -243,17 +243,29 @@ select {
 .tab .live { color: var(--add-fg); }
 .tab .x { color: var(--dim); }
 
-.banner { flex: none; padding-bottom: 6px; color: var(--dim); }
-.banner .big { color: var(--accent); font-weight: 700; }
+.banner { flex: none; padding-bottom: 6px; color: var(--dim); line-height: 1.2; }   /* block-glyph logos need touching rows */
+.banner > div { white-space: pre-wrap; min-height: 1.2em; }
+
+/* user turns sit on a filled band in the CLIs that have one */
+.banded .line.user { background: var(--user-bg); padding: .3em .6em; margin: 0 -.6em; }
 
 .promptbox { padding: 6px 14px 4px; }
 .queue { padding-bottom: 2px; }
 .inputline { display: flex; align-items: baseline; }
 .inputline .pre { flex: none; }
-.inputbox {
+.input-box {
   border: 1px solid var(--rule2);
   border-radius: 6px;
   padding: 5px 9px;
+}
+.input-rules {
+  border-top: 1px solid var(--rule2);
+  border-bottom: 1px solid var(--rule2);
+  padding: 5px 0;
+}
+.input-band {
+  background: var(--user-bg);
+  padding: 7px 9px;
 }
 .caret {
   flex: none;
@@ -269,11 +281,11 @@ select {
   padding: 4px 14px 8px;
   color: var(--dim);
   font-size: .92em;
+  white-space: pre;
 }
+.statusbar .left { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .statusbar .right { text-align: right; }
 .caret { background: var(--fg); color: var(--bg); }
-.box { color: var(--rule2); }
-.box .inner { color: var(--dim); }
 
 #hint {
   position: absolute;
