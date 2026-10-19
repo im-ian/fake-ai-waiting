@@ -1,7 +1,7 @@
 {
   "name": "fake-ai-waiting",
   "version": "1.0.0",
-  "description": "Fake AI agent working screen — Codex / Claude Code / Gemini CLI / Grok Build themes, in the browser or the terminal",
+  "description": "Fake AI agent working screen — Codex / Claude Code / Antigravity CLI / Grok Build themes, in the browser or the terminal",
   "bin": { "fake-ai": "cli.js" },
   "engines": { "node": ">=18" },
   "scripts": {

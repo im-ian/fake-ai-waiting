@@ -2,9 +2,11 @@
 
 AI 에이전트가 한창 작업하는 터미널 화면을 재생해 주는 페이지입니다. [whitescreen 의 가짜 macOS 업데이트 화면](https://www.whitescreen.online/fake-mac-os-x-update-screen/) 과 [hackertyper](https://hackertyper.net/) 를 AI CLI 로 옮겼다고 보면 됩니다.
 
-테마는 Codex, Claude Code, Gemini CLI, Grok Build 네 가지이고, 시나리오 10개가 한 글자씩 흘러나옵니다. git diff 색상과 추론 대기 연출까지 들어 있지만 출력은 전부 미리 써 둔 스크립트라서, 네트워크 요청도 의존성도 없습니다.
+테마는 Codex, Claude Code, Antigravity CLI, Grok Build 네 가지이고, 시나리오 10개가 한 글자씩 흘러나옵니다. git diff 색상과 추론 대기 연출까지 들어 있지만 출력은 전부 미리 써 둔 스크립트라서, 네트워크 요청도 의존성도 없습니다.
 
-화면과 모델은 2026년 10월 기준 실제 CLI 를 따릅니다. Claude Code 2.1.303 (Opus 5.5), Codex 0.163.0 (gpt-6.1-sol), Gemini CLI 0.64.0 (gemini-3.1-pro-preview), Grok Build 1.0.62 (Grok 4.7) 입니다. 버전을 올릴 때는 `themes.js` 만 고치면 됩니다.
+화면과 모델은 2026년 10월 기준 실제 CLI 를 따릅니다. Claude Code 2.1.303 (Opus 5.5), Codex 0.163.0 (gpt-6.1-sol), Antigravity CLI 1.4.2 (Gemini 3.8 Flash), Grok Build 1.0.62 (Grok 4.7) 입니다. 버전을 올릴 때는 `themes.js` 만 고치면 됩니다.
+
+Google 개인 계정은 2026년 6월부터 Gemini CLI 대신 Antigravity CLI(`agy`)를 쓰고, xAI 의 공식 터미널 에이전트는 Grok Build 입니다. 테마도 이 둘을 따르지만, 저장된 설정과 스크립트가 깨지지 않도록 테마 이름(`gemini`, `grok`)은 그대로 둡니다.
 
 ## 웹
 
